@@ -1,8 +1,7 @@
 import re
-from assistant.address_book import *
+from address_book import *
 from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit import prompt
-from Main_menu import AbstractResponse,  AbstractHelp
 
 GOOD_BYE_MSG = "Good bye!"
 COMMAND_ARGS_MAX_COUNT = 5
@@ -104,7 +103,7 @@ def input_error(handler):
 def hello_handler(data=None):
     return "How can I help you?"
 
-class Help(AbstractHelp):
+class Help():
     @input_error
     def help_handler(data=None):
         field_len = len(sorted(COMMANDS.keys(), key=lambda x: len(x), reverse=True)[0])
@@ -229,7 +228,7 @@ def bd_search(data):
     if found := CONTACTS.search_bd(data[0]):
         return found
 
-class Response(AbstractResponse):
+class Response():
     @input_error
     def show_all_handler(data=None):
         if len(CONTACTS) == 0:

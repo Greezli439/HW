@@ -1,6 +1,6 @@
 import time
 
-from assistant.notebook_classes import *
+from notebook_classes import *
 from random import sample, randint
 
 some_data = """

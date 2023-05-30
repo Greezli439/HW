@@ -1,7 +1,6 @@
-from assistant.notebook_classes import *
+from notebook_classes import *
 from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit import prompt
-from Main_menu import AbstractResponse,  AbstractHelp
 
 GOOD_BYE_MSG = "Good bye!"
 COMMAND_ARGS_MAX_COUNT = 1
@@ -114,7 +113,7 @@ def input_error(handler):
 def hello_handler(data=None):
     return "How can I help you?"
 
-class Help(AbstractHelp):
+class Help():
     @input_error
     def help_handler(data=None):
         field_len = len(sorted(COMMANDS.keys(), key=lambda x: len(x), reverse=True)[0])
@@ -197,7 +196,7 @@ def show_tags(data=None):
     tags_list = content_format(", ".join([tag for tag in notebook.tags]))
     return tags_list
 
-class Response(AbstractResponse):
+class Response():
     @input_error
     def show_all_handler(data=None):
         if len(notebook) == 0:

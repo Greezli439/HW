@@ -1,7 +1,7 @@
 from abc import abstractmethod, ABC
-from assistant.arrange_dir import arrange_dir
-from assistant.main_address_book import main as adress_book
-from assistant.main_note import main as note_book
+from arrange_dir import arrange_dir
+from main_address_book import main as adress_book
+from main_note import main as note_book
 from prompt_toolkit import prompt
 from prompt_toolkit.completion import WordCompleter
 import random
