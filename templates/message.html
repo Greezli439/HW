@@ -20,7 +20,7 @@
         aria-label="Second navbar example"
       >
         <div class="container-fluid">
-          <a class="navbar-brand" href="#">
+          <a class="navbar-brand" href="/">
             <img src="{{ url_for('static', filename='/logo.png') }}"  alt="logo" />
           </a>
           <div class="collapse navbar-collapse" id="navbarsExample02">
@@ -29,7 +29,7 @@
                 <a class="nav-link active" aria-current="page" href="/">Home</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="#">Send message</a>
+                <a class="nav-link" href="/message">Send message</a>
               </li>
             </ul>
           </div>
@@ -38,7 +38,7 @@
     </header>
     <div class="container mt-3">
       <main class="form-signin w-50 m-auto">
-        <form action="/message" method="POST">
+        <form action="{{ url_for('message') }}" method="POST">
           <h1 class="h3 mb-3 fw-normal">Please send me message</h1>
 
           <div class="row mb-3">

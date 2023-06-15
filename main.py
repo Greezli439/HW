@@ -2,9 +2,18 @@ from flask import Flask, render_template, request
 from threading import Thread
 import datetime
 import json
+import socket
+from time import sleep
+
 
 def run_server():
     app = Flask(__name__)
+    my_socket_sender = socket.socket()
+    my_socket_sender.connect(('localhost', 3000))
+
+    @app.errorhandler(404)
+    def page_not_found(error):
+        return render_template('error.html')
 
     @app.route('/')
     def index():
@@ -17,20 +26,38 @@ def run_server():
             message = request.form.get('message')
 
             #тут новий клієнт для збереження в файл
-            with open('storage/data.json', 'r') as f:
-                data_from_file = json.load(f)
-            data_from_file[str(datetime.datetime.now())] = {'username': username, 'message': message}
+            #сделать подключение один раз
 
-            with open('storage/data.json', 'w') as f:
-                json.dump(data_from_file, f)
 
-            print(message, username)
+            data = json.dumps((username, message))
+            my_socket_sender.sendall(data.encode('utf-8'))
+
 
         return render_template('message.html')
 
     app.run()
 
+def start_socket_client():
+    my_socket_client = socket.socket()
+    my_socket_client.bind(('localhost', 3000))
+    my_socket_client.listen(1)
+    connection, adress = my_socket_client.accept()
+    while True:
+        data = connection.recv(1024)
+        data = data.decode('utf-8')
+        data = json.loads(data)
+
+        with open('storage/data.json', 'r') as f:
+            data_from_file = json.load(f)
+        data_from_file[str(datetime.datetime.now())] = {'username': data[0], 'message': data[1]}
+
+        with open('storage/data.json', 'w') as f:
+            json.dump(data_from_file, f)
 
 if __name__ == '__main__':
+
+    thread_for_socket_client = Thread(target=start_socket_client)
+    thread_for_socket_client.start()
+    sleep(1)
     thread_for_server = Thread(target=run_server)
     thread_for_server.start()
