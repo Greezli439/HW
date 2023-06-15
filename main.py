@@ -4,7 +4,18 @@ import datetime
 import json
 import socket
 from time import sleep
+from pathlib import Path
 
+'''
+docker build /Users/mykhailo/studies/go_it/2.0/HW -t hw_4
+
+docker run -d -p 3000:5000 -v /Users/mykhailo/studies/go_it/2.0/HW/storage:/app/storage hw_4
+
+docker ps
+docker inspect 
+
+http://0.0.0.0:3000/m
+'''
 
 def run_server():
     app = Flask(__name__)
@@ -35,7 +46,7 @@ def run_server():
 
         return render_template('message.html')
 
-    app.run()
+    app.run(debug=False, host='0.0.0.0')
 
 def start_socket_client():
     my_socket_client = socket.socket()
@@ -54,8 +65,19 @@ def start_socket_client():
         with open('storage/data.json', 'w') as f:
             json.dump(data_from_file, f)
 
+def check_data_file():
+    if not Path('storage/data.json').is_file():
+        create_data_file()
+
+def create_data_file():
+    Path('storage').mkdir()
+    Path('storage/data.json').touch()
+    with open('storage/data.json', 'w') as f:
+        json.dump({}, f)
+
 if __name__ == '__main__':
 
+    check_data_file()
     thread_for_socket_client = Thread(target=start_socket_client)
     thread_for_socket_client.start()
     sleep(1)
