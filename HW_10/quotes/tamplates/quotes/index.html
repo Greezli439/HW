@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    {% if quotes_list %}
+        <ul>
+            {% for i in quotes_list%}
+            <li>
+                  <p>{{ i.quote }}</p>
+                  <p><a href="author">{{ i.author }}</a></p>
+                  <p>{{ i.tags }}</p>
+            </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</body>
+</html>

@@ -1,14 +1,16 @@
 from django.db import models
+from mongoengine.fields import StringField, ListField, ReferenceField
+from mongoengine import Document
 
 
-class Author(models.Model):
-    fullname = models.CharField(max_length=30)
-    born_date = models.CharField(max_length=20)
-    born_location = models.CharField()
-    description = models.TextField()
+class Authors(Document):
+    fullname = StringField(unique=True)
+    born_date = StringField()
+    born_location = StringField()
+    description = StringField()
 
 
-class Quote(models.Model):
-    quote = models.TextField()
-    tags = models.TextField()
-    author = models.ForeignKey(Author, on_delete=models.CASCADE, default=None, null=True)
+class Quotes(Document):
+    tags = ListField()
+    author = ReferenceField(Authors, reverse_delete_rule='CASCADE')
+    quote = StringField()
