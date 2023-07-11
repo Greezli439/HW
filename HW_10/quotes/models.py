@@ -18,3 +18,8 @@ class Quote(Model):
 
     def __str__(self):
         return self.quote
+
+
+if __name__ == '__main__':
+    quotes_list = Quote.objects.all()
+    print(quotes_list)

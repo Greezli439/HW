@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Note information</title>
+    <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@latest/css/pico.min.css"/>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'noteapp/style.css' %}">
+</head>
+<header>
+
+</header>
+<body>
+    {% if author_data %}
+
+                  <p>{{ author_data.fullname }}</p>
+                  <p>{{ author_data.born_date }}</p>
+                  <p>{{ author_data.born_location }}</p>
+                  <p>{{ author_data.description }}</p>
+
+    {% endif %}
+</body>
+</html>
+{% endblock %}
