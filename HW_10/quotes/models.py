@@ -1,4 +1,4 @@
-from django.db.models import Model, CharField, TextField, ForeignKey, CASCADE
+from django.db.models import Model, CharField, TextField, ForeignKey, CASCADE, ManyToManyField
 
 
 class Author(Model):
@@ -11,9 +11,16 @@ class Author(Model):
         return self.fullname
 
 
+class Tag(Model):
+    tag_name = CharField(max_length=100, null=False, unique=True)
+
+    def __str__(self):
+        return self.tag_name
+
+
 class Quote(Model):
     quote = TextField()
-    tags = TextField()
+    tags = ManyToManyField(Tag)
     author = ForeignKey(Author, on_delete=CASCADE, null=True)
 
     def __str__(self):

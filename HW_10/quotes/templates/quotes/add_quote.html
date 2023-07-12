@@ -11,10 +11,13 @@
         <span>{{ quote_form.errors.quote }}</span>
     </div>
     <div style="padding: 10px">
-        <label>Tags:
-            {{quote_form.tags}}
-        </label>
-        <span>{{ quote_form.errors.tags }}</span>
+        <label> Select tags:
+            <select name="tags" required>
+                {% for tag in tags %}
+                <option value="{{tag.tag_name}}">{{tag.tag_name}}</option>
+                {% endfor %}
+            </select>
+    </label>
     </div>
     <label> Select author:
             <select name="authors" required>

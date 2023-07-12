@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from .models import Quote, Author
-from .forms import AuthorForm, QuoteForm
+from .models import Quote, Author, Tag
+from .forms import AuthorForm, QuoteForm, TagForm
 from django.template import loader
 from django.contrib.auth.decorators import login_required
 
@@ -38,22 +38,34 @@ def add_author(request):
 @login_required
 def add_qoute(request):
 
-    authors = Author.objects.all()
+    metadata = {
+        'quote_form': QuoteForm(),
+        'tag_form': TagForm(),
+        'author_form': AuthorForm(),
+        'authors': Author.objects.all(),
+        'tags': Tag.objects.all()
+    }
 
     if request.method == 'POST':
-        form = QuoteForm(request.POST)
-        if form.is_valid():
-            new_note = form.save()
-
-            authors_from_db = Author.objects.filter(name__in=request.POST.getlist('fullname'))
-            for au in authors_from_db.iterator():
-                new_note.authors.add(au)
+        form_q = QuoteForm(request.POST)
+        form_t = TagForm(request.POST)
+        form_a = AuthorForm(request.POST)
+        if form_q.is_valid() and form_t.is_valid() and form_a.is_valid():
+            new_quote = form_q.save(commit=False)
+            author_from_post = form_a.save()
+            new_quote.author = author_from_post
+            new_quote.save()
+            tags = form_t.save()
+            tags_db_object = Tag.objects.filter(name__in=request.POST.getlist('tag_name'))
+            for tag in tags_db_object.iterator():
+                new_quote.tags.add(tag)
 
             return redirect(to='quotes:quotes')
         else:
-            return render(request, 'quotes/add_quote.html', {"authors": authors, 'quote_form': form})
+            return render(request, 'quotes/1.html', metadata)
 
-    return render(request, 'quotes/add_quote.html', {"authors": authors, 'quote_form': QuoteForm()})
+
+    return render(request, 'quotes/add_quote.html', metadata)
 
 
 def author(request, id):

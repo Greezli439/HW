@@ -5,13 +5,13 @@
     <title>Note information</title>
     <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@latest/css/pico.min.css"/>
     {% load static %}
-    <link rel="stylesheet" href="{% static 'noteapp/style.css' %}">
+    <link rel="stylesheet" href="{% static 'style.css' %}">
 </head>
 <body>
 <main class="container">
     <nav style="margin-bottom: 20px; border-bottom: 2px solid; padding-left: 30px">
         <ul>
-            <li><a href="/quotes" role="button"> Go back to the main page </a></li>
+            <li><a href="/" role="button"> Go back to the main page </a></li>
         </ul>
     </nav>
     {% block content %} {% endblock %}
