@@ -6,13 +6,13 @@
     {% csrf_token %}
     <div style="padding: 10px">
         <label>quote:
-            {{quote_form.quote}}
+            {{quote_form.text}}
         </label>
-        <span>{{ quote_form.errors.quote }}</span>
+        <span>{{ quote_form.errors.text }}</span>
     </div>
     <div style="padding: 10px">
         <label> Select tags:
-            <select name="tags" required>
+            <select name="tags" multiple="multiple" required>
                 {% for tag in tags %}
                 <option value="{{tag.tag_name}}">{{tag.tag_name}}</option>
                 {% endfor %}
@@ -22,7 +22,7 @@
     <label> Select author:
             <select name="authors" required>
                 {% for author in authors %}
-                <option value="{{author.fullname}}">{{author.fullname}}</option>
+                <option value="{{author.id}}">{{author.fullname}}</option>
                 {% endfor %}
             </select>
     </label>

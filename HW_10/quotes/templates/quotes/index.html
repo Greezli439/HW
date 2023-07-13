@@ -13,6 +13,7 @@
         <ul>
             <li><a href="{% url 'quotes:add_quote' %}" role="button">Add quote</a></li>
             <li><a href="{% url 'quotes:add_author' %}" role="button">Add author</a></li>
+            <li><a href="{% url 'quotes:add_tag' %}" role="button">Add tag</a></li>
         </ul>
         <ul>
             <li>Welcome <b>{{ user.username }}!</b></li>
@@ -31,9 +32,13 @@
         <ul>
             {% for i in quotes_list%}
             <li>
-                  <p>{{ i.quote }}</p>
-                  <p><a href="author/{{i.author_id}}">{{ i.author }}</a></p>
-                  <p>{{ i.tags }}</p>
+                  <p>Quote: {{ i.quote }}</p>
+                  <p><a href="quotes/author/{{i.author_id_id}}">Author: {{ i.author_id }}</a></p>
+                  <p> Tags:
+                     {% for tag in i.tags.all %}
+                       {{ tag }}
+                     {% endfor %}
+                  </p>
             </li>
             {% endfor %}
         </ul>

@@ -12,7 +12,7 @@ class Author(Model):
 
 
 class Tag(Model):
-    tag_name = CharField(max_length=100, null=False, unique=True)
+    tag_name = CharField(max_length=101, null=False, unique=True)
 
     def __str__(self):
         return self.tag_name
@@ -21,12 +21,8 @@ class Tag(Model):
 class Quote(Model):
     quote = TextField()
     tags = ManyToManyField(Tag)
-    author = ForeignKey(Author, on_delete=CASCADE, null=True)
+    author_id = ForeignKey(Author, on_delete=CASCADE, default=None, null=True)
 
     def __str__(self):
         return self.quote
 
-
-if __name__ == '__main__':
-    quotes_list = Quote.objects.all()
-    print(quotes_list)

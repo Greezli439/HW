@@ -1,4 +1,4 @@
-from django.forms import ModelForm, CharField, TextInput
+from django.forms import ModelForm, CharField, TextInput, Textarea
 from .models import Author, Quote, Tag
 
 class AuthorForm(ModelForm):
@@ -21,10 +21,21 @@ class TagForm(ModelForm):
 
 
 class QuoteForm(ModelForm):
-    quote = CharField(max_length=150, required=True, widget=TextInput())
-
+    text = CharField(min_length=10, required=True, widget=Textarea(attrs={"class": "form-control"}))
 
     class Meta:
         model = Quote
-        fields = ['quote']
-        exclude = ['author', 'tags']
+        fields = ['text']
+        exclude = ['tags', 'author']
+
+    # quote = CharField(max_length=150, required=True, widget=TextInput())
+    # author = CharField(max_length=150, required=True, widget=TextInput())
+    # tags = CharField(max_length=50, required=True, widget=TextInput())
+    #
+    # class Meta:
+    #     model = Quote
+    #     fields = ['quote', 'author']
+    #     exclude = ['tags']
+
+
+
