@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, EmailStr
 from typing import Optional
 from datetime import date, datetime
 
@@ -15,19 +15,19 @@ class ContactDB(BaseModel):
     id: int
     first_name: str
     last_name: str
-    email: str
+    email: EmailStr
     phone: str
     birthday: date
 
 
 class UserModel(BaseModel):
-    email: str
-    password: str = Field(min_length=6, max_length=10)
+    email: EmailStr
+    password: str
 
 
 class UserDb(BaseModel):
     id: int
-    email: str
+    email: EmailStr
     created_at: datetime
     avatar: str
 
@@ -44,3 +44,11 @@ class TokenModel(BaseModel):
     access_token: str
     refresh_token: str
     token_type: str = "bearer"
+
+
+class EmailSchema(BaseModel):
+    email: EmailStr
+
+
+class RequestEmail(BaseModel):
+    email: EmailStr

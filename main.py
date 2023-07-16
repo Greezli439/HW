@@ -1,86 +1,37 @@
 from src.routes import contacts
-
-from fastapi import FastAPI, Depends, HTTPException, status, Security
-from fastapi.security import OAuth2PasswordRequestForm, HTTPAuthorizationCredentials, HTTPBearer
-from sqlalchemy.orm import Session
-from pydantic import BaseModel
+import redis.asyncio as redis
+from fastapi_limiter import FastAPILimiter
+from fastapi.middleware.cors import CORSMiddleware
 
 
-from src.services.auth import auth_service
-from src.database.db import get_db
-from src.database.models import User
+from fastapi import FastAPI
+from fastapi.security import HTTPBearer
+from src.conf.config import settings
+from src.routes import auth, users
 
-from src.routes import auth
+origins = [
+    "http://localhost:3000"
+    ]
 
 
 app = FastAPI()
 app.include_router(contacts.router, prefix='/api')
 app.include_router(auth.router, prefix='/api')
+app.include_router(users.router, prefix='/api')
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 security = HTTPBearer()
 
-class UserModel(BaseModel):
-    username: str
-    password: str
 
-'''
-@app.post("/signup")
-async def signup(body: UserModel, db: Session = Depends(get_db)):
-    exist_user = db.query(User).filter(User.email == body.username).first()
-    if exist_user:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Account already exists")
-    new_user = User(email=body.username, password=auth_service.get_password_hash(body.password))
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
-    return {"new_user": new_user.email}
-
-
-@app.post("/login")
-async def login(body: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.email == body.username).first()
-    if user is None:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid email")
-    if not auth_service.verify_password(body.password, user.password):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid password")
-    # Generate JWT
-    access_token = await auth_service.create_access_token(data={"sub": user.email})
-    refresh_token = await auth_service.create_refresh_token(data={"sub": user.email})
-    user.refresh_token = refresh_token
-    db.commit()
-    return {"access_token": access_token, "refresh_token": refresh_token, "token_type": "bearer"}
-
-
-@app.get('/refresh_token')
-async def refresh_token(credentials: HTTPAuthorizationCredentials = Security(security), db: Session = Depends(get_db)):
-    token = credentials.credentials
-    email = await auth_service.get_email_form_refresh_token(token)
-    user = db.query(User).filter(User.email == email).first()
-    if user.refresh_token != token:
-        user.refresh_token = None
-        db.commit()
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid refresh token")
-
-    access_token = await auth_service.create_access_token(data={"sub": email})
-    refresh_token = await auth_service.create_refresh_token(data={"sub": email})
-    user.refresh_token = refresh_token
-    db.commit()
-    return {"access_token": access_token, "refresh_token": refresh_token, "token_type": "bearer"}
-
-
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
-
-
-@app.get("/secret")
-async def read_item(current_user: User = Depends(auth_service.get_current_user)):
-    return {"message": 'secret router', "owner": current_user.email}
-
-
-"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0b20zQGdtYWlsLmNvbSIsImlhdCI6MTY4OTQ0NjMzMiwiZXhwIjoxNjg5NDQ3MjMyLCJzY29wZSI6ImFjY2Vzc190b2tlbiJ9.PioB-W57JGljlMaUXjy_zNBEBQTdp0YhC4eniWFzXiI",
-  "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0b20zQGdtYWlsLmNvbSIsImlhdCI6MTY4OTQ0NjMzMiwiZXhwIjoxNjkwMDUxMTMyLCJzY29wZSI6InJlZnJlc2hfdG9rZW4ifQ.05U5MK3HU3ey_tFyzZUB8x_30SGdErKTPwVnoceBSWk",
-  "token_type": "bearer"
-
-'''
+@app.on_event("startup")
+async def startup():
+    r = await redis.Redis(host=settings.redis_host, port=settings.redis_port, db=0, encoding="utf-8",
+                          decode_responses=True)
+    await FastAPILimiter.init(r)
