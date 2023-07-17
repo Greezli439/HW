@@ -1,3 +1,9 @@
 from mongoengine import connect
+import environ
 
-connect(host='mongodb+srv://greezlistuding:UB1VnEMbXIJSxHph@cluster0.1iemlfa.mongodb.net/?retryWrites=true&w=majority')
+from pathlib import Path
+BASE_DIR = Path(__file__).resolve().parent.parent
+env = environ.Env()
+environ.Env.read_env(BASE_DIR / '.env')
+MONGODB_CONECRION = env('MONGODB_CONECRION')
+connect(host='MONGODB_CONECRION')
