@@ -14,6 +14,10 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
 def get_db():
+    '''
+    Create connections session with database.
+    @return: None
+    '''
     db = SessionLocal()
     try:
         yield db

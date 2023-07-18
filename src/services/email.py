@@ -28,6 +28,17 @@ conf = ConnectionConfig(
 
 
 async def send_email(email: EmailStr, username: str, host: str):
+    """
+    Function for sending mail with confirmation string for email adress confirm.
+
+    :param email: user email
+    :type email:  EmailStr
+    :param username: user username
+    :type username: str
+    :param host: we will use for sending this host
+    :type host: str
+    :return: None
+    """
     try:
         token_verification = auth_service.create_email_token({"sub": email})
         print(token_verification)

@@ -1,3 +1,6 @@
+"""
+Module with own custom or previously implemented methods.
+"""
 from typing import Optional
 
 from jose import JWTError, jwt
@@ -14,19 +17,47 @@ from src.repository import users as repository_users
 
 
 class Auth:
+    """
+    Class is consist own custom or previously implemented methods.
+    """
     pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
     SECRET_KEY = settings.secret_key
     ALGORITHM = settings.algorithm
     oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
 
     def verify_password(self, plain_password, hashed_password):
+        """
+        Verif password.
+        :param plain_password: password before hashing.
+        :type : str
+        :param hashed_password: password after hashing.
+        :type : str
+        :return: Boolean result.
+        :rtype: Boolean
+        """
         return self.pwd_context.verify(plain_password, hashed_password)
 
     def get_password_hash(self, password: str):
+        """
+
+        :param password: password before hashing.
+        :type password: str
+        :return: password after hashing.
+        :rtype: str
+        """
         return self.pwd_context.hash(password)
 
     # define a function to generate a new access token
     async def create_access_token(self, data: dict, expires_delta: Optional[float] = None):
+        """
+
+        :param data: Current User.
+        :type data: User
+        :param expires_delta: Validity period.
+        :type expires_delta: int
+        :return: access token.
+        :rtype: str
+        """
         to_encode = data.copy()
         if expires_delta:
             expire = datetime.utcnow() + timedelta(seconds=expires_delta)
@@ -36,8 +67,16 @@ class Auth:
         encoded_access_token = jwt.encode(to_encode, self.SECRET_KEY, algorithm=self.ALGORITHM)
         return encoded_access_token
 
-    # define a function to generate a new refresh token
     async def create_refresh_token(self, data: dict, expires_delta: Optional[float] = None):
+        """
+        Define a function to generate a new refresh token.
+        :param data: Current User.
+        :type data: User
+        :param expires_delta: Validity period.
+        :type expires_delta: int
+        :return: Refresh token.
+        :rtype: str
+        """
         to_encode = data.copy()
         if expires_delta:
             expire = datetime.utcnow() + timedelta(seconds=expires_delta)
@@ -48,6 +87,13 @@ class Auth:
         return encoded_refresh_token
 
     async def decode_refresh_token(self, refresh_token: str):
+        """
+
+        :param refresh_token: Users token.
+        :type refresh_token: str
+        :return: Users mail.
+        :rtype: str
+        """
         try:
             payload = jwt.decode(refresh_token, self.SECRET_KEY, algorithms=[self.ALGORITHM])
             if payload['scope'] == 'refresh_token':
@@ -58,6 +104,15 @@ class Auth:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Could not validate credentials')
 
     async def get_current_user(self, token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+        """
+
+        :param token: Users token.
+        :type token: str
+        :param db: db session.
+        :type db: Session
+        :return: User.
+        :rtype:
+        """
         credentials_exception = HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Could not validate credentials",
@@ -82,6 +137,13 @@ class Auth:
         return user
 
     def create_email_token(self, data: dict):
+        """
+
+        :param data:  Current User.
+        :type data: User
+        :return: token for confirming mail.
+        :rtype: str
+        """
         to_encode = data.copy()
         expire = datetime.utcnow() + timedelta(days=7)
         to_encode.update({"iat": datetime.utcnow(), "exp": expire})
@@ -89,6 +151,13 @@ class Auth:
         return token
 
     async def get_email_from_token(self, token: str):
+        """
+
+        :param token: token with confirming mail.
+        :type token: str
+        :return: users mail.
+        :rtype: str
+        """
         try:
             payload = jwt.decode(token, self.SECRET_KEY, algorithms=[self.ALGORITHM])
             email = payload["sub"]
